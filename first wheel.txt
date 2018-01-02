@@ -1,0 +1,158 @@
+package roulette;
+
+import java.util.*;
+import java.io.*;
+
+public class Wheel {
+    
+    private int[][] averages;
+    
+    private int[] maxRuns;
+    
+    private int[] currentRuns;
+    private int[] lastType;
+    
+    private final int ZERO1 = -1;
+    private final int ZERO2 = 0;
+    private final int EVEN = 1;
+    private final int ODD = 2;
+    private final int RED = 3;
+    private final int BLACK = 4;
+    private final int TOP = 5;
+    private final int BOTTOM = 6;
+    private final int FIRST_12 = 7;
+    private final int SECOND_12 = 8;
+    private final int THIRD_12 = 9;
+    private final int FIRST_COL = 10;
+    private final int SECOND_COL = 11;
+    private final int THIRD_COL = 12;
+    
+    private final int NUM_TYPES = 6;
+    private final int NUM_SPINS = 100000;
+    
+    public Wheel() {
+        averages = new int[NUM_SPINS][NUM_TYPES];
+        maxRuns = new int[NUM_TYPES];
+        for( int i=0; i<maxRuns.length; i++ ) maxRuns[i] = 0;
+        currentRuns = new int[NUM_TYPES];
+        lastType = new int[NUM_TYPES];
+        zero();
+    }
+    
+    public void zero() {
+        for( int i=0; i<NUM_TYPES; i++ ) {
+            currentRuns[i] = ZERO1;
+            lastType[i] = ZERO1;
+        }
+    }
+    
+    public void yeah() {
+        Random generator = new Random();
+        int next;
+        for( int i=0; i<NUM_SPINS; i++ ) {
+            next = generator.nextInt(37) - 1;
+            
+            if( next == -1 )     System.out.print( "00" );
+            else if( next == 0 ) System.out.print( " 0" );
+            else if( next < 10 ) System.out.print( " "+next );
+            else                 System.out.print( next );
+            
+            // 0
+            if( next == ZERO1 || next == ZERO2 ) {
+                System.out.println( "  |          Green" );
+            } else {
+                
+                //1
+                if( next % 2 == 0 ) {
+                    System.out.print( "  |  E   " );
+                    if( lastType[1] == EVEN ) currentRuns[1]++;
+                    else currentRuns[1] = 1;
+                    if( currentRuns[1] > maxRuns[1] ) maxRuns[1] = currentRuns[1];
+                    lastType[1] = EVEN;
+                } else {
+                    System.out.print( "  |    O " );
+                    if( lastType[1] == ODD ) currentRuns[1]++;
+                    else currentRuns[1] = 1;
+                    if( currentRuns[1] > maxRuns[1] ) maxRuns[1] = currentRuns[1];
+                    lastType[1] = ODD;
+                }
+                
+                //2
+                if( next == 1 || next == 3 || next == 5 || next == 7 || next == 9 || next == 12 || next == 14 || next == 16 || next == 18 || next == 19 || next == 21 || next == 23 || next == 25 || next == 27 || next == 30 || next == 32 || next == 34 || next == 36 ) {
+                    System.out.print( "  |  R   " );
+                    if( lastType[2] == RED ) currentRuns[2]++;
+                    else currentRuns[2] = 1;
+                    if( currentRuns[2] > maxRuns[2] ) maxRuns[2] = currentRuns[2];
+                    lastType[2] = RED;
+                } else {
+                    System.out.print( "  |    B " );
+                    if( lastType[2] == BLACK ) currentRuns[2]++;
+                    else currentRuns[2] = 1;
+                    if( currentRuns[2] > maxRuns[2] ) maxRuns[2] = currentRuns[2];
+                    lastType[2] = BLACK;
+                }
+                
+                //3
+                if( next < 19 ) {
+                    System.out.print( "  |  \"18\"      " );
+                    if( lastType[3] == TOP ) currentRuns[3]++;
+                    else currentRuns[3] = 1;
+                    if( currentRuns[3] > maxRuns[3] ) maxRuns[3] = currentRuns[3];
+                    lastType[3] = TOP;
+                } else {
+                    System.out.print( "  |       \"36\" " );
+                    if( lastType[3] == BOTTOM ) currentRuns[3]++;
+                    else currentRuns[3] = 1;
+                    if( currentRuns[3] > maxRuns[3] ) maxRuns[3] = currentRuns[3];
+                    lastType[3] = BOTTOM;
+                }
+                
+                //4
+                if( next < 13 ) {
+                    System.out.print( "  |  \"1-12\"               " );
+                    if( lastType[4] == FIRST_12 ) currentRuns[4]++;
+                    else currentRuns[4] = 1;
+                    if( currentRuns[4] > maxRuns[4] ) maxRuns[4] = currentRuns[4];
+                    lastType[4] = FIRST_12;
+                } else if( next < 25 ) {
+                    System.out.print( "  |         \"2-12\"        " );
+                    if( lastType[4] == SECOND_12 ) currentRuns[4]++;
+                    else currentRuns[4] = 1;
+                    if( currentRuns[4] > maxRuns[4] ) maxRuns[4] = currentRuns[4];
+                    lastType[4] = SECOND_12;
+                } else {
+                    System.out.print( "  |                \"3-12\" " );
+                    if( lastType[4] == THIRD_12 ) currentRuns[4]++;
+                    else currentRuns[4] = 1;
+                    if( currentRuns[4] > maxRuns[4] ) maxRuns[4] = currentRuns[4];
+                    lastType[4] = THIRD_12;
+                }
+                
+                //5
+                if( next % 3 == 0 ) {
+                    System.out.print( "  |  1-Col             " );
+                    if( lastType[5] == FIRST_COL ) currentRuns[5]++;
+                    else currentRuns[5] = 1;
+                    if( currentRuns[5] > maxRuns[5] ) maxRuns[5] = currentRuns[5];
+                    lastType[5] = FIRST_COL;
+                } else if( next % 3 == 1 ) {
+                    System.out.print( "  |        2-Col       " );
+                    if( lastType[5] == SECOND_COL ) currentRuns[5]++;
+                    else currentRuns[5] = 1;
+                    if( currentRuns[5] > maxRuns[5] ) maxRuns[5] = currentRuns[5];
+                    lastType[5] = SECOND_COL;
+                } else {
+                    System.out.print( "  |              3-Col " );
+                    if( lastType[5] == THIRD_COL ) currentRuns[5]++;
+                    else currentRuns[5] = 1;
+                    if( currentRuns[5] > maxRuns[5] ) maxRuns[5] = currentRuns[5];
+                    lastType[5] = THIRD_COL;
+                }
+                
+                System.out.print("\n");
+            }
+        }
+        for( int k=1; k<maxRuns.length; k++ ) System.out.println( maxRuns[k] );
+    }
+}
+
